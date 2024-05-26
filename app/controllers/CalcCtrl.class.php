@@ -1,25 +1,22 @@
 <?php
-// W skrypcie definicji kontrolera nie trzeba dołączać żadnego skryptu inicjalizacji.
-// Konfiguracja, Messages i Smarty są dostępne za pomocą odpowiednich funkcji.
-// Kontroler ładuje tylko to z czego sam korzysta.
 
-require_once 'CalcForm.class.php';
-require_once 'CalcResult.class.php';
+namespace app\controllers;
 
-/** Kontroler kalkulatora
- * @author Przemysław Kudłacik
- *
- */
+
+use app\forms\CalcForm;
+use app\transfer\CalcResult;
+
+
 class CalcCtrl {
 
-	private $form;   //dane formularza (do obliczeń i dla widoku)
-	private $result; //inne dane dla widoku
+	private $form; 
+	private $result;
 
 	/** 
-	 * Konstruktor - inicjalizacja właściwości
+	 * Konstruktor
 	 */
 	public function __construct(){
-		//stworzenie potrzebnych obiektów
+		
 		$this->form = new CalcForm();
 		$this->result = new CalcResult();
 	}
@@ -35,13 +32,12 @@ class CalcCtrl {
 
 	/* 
 	  Walidacja parametrów
-	  @return true jeśli brak błedów, false w przeciwnym wypadku 
 	 */
 	public function validate() {
-		// sprawdzenie, czy parametry zostały przekazane
+		
 		if (! (isset ( $this->form->kwota ) && isset ( $this->form->czas ) && isset ( $this->form->oprocentowanie ))) {
-			// sytuacja wystąpi kiedy np. kontroler zostanie wywołany bezpośrednio - nie z formularza
-			return false; //zakończ walidację z błędem
+			
+			return false; 
 		}
 		
 		
@@ -84,7 +80,7 @@ class CalcCtrl {
 		
 		if ($this->validate()) {
 				
-			//konwersja parametrów na int
+			
 			$this->form->kwota = intval($this->form->kwota);
 			$this->form->czas = intval($this->form->czas);
 			$this->form->oprocentowanie = intval($this->form->oprocentowanie);
@@ -95,30 +91,44 @@ class CalcCtrl {
 		getMessages()->addError('Nie możesz liczyć dla kwot mniejszych od 1pln !');
 				
 			} else {
-				$this->result->result = $this->form->kwota / (12*$this->form->czas)+($this->form->kwota/(12*$this->form->czas))*$this->form->oprocentowanie;
 				
-				getMessages()->addInfo('Wykonano obliczenia.');
-			}		
+				
+				if (inRole('admin')) {
+						$this->result->result = $this->form->kwota / (12*$this->form->czas)+($this->form->kwota/(12*$this->form->czas))*$this->form->oprocentowanie;
+					} else {
+						if ($this->form->kwota > 1000){
+						getMessages()->addError('Tylko administrator moze liczyc powyzej 1000');}
+						else{
+						$this->result->result = $this->form->kwota / (12*$this->form->czas)+($this->form->kwota/(12*$this->form->czas))*$this->form->oprocentowanie;	
+						}
+					}
+				
+				
+				
 			
+			}		
+			getMessages()->addInfo('Wykonano obliczenia.');
 		}
 		
 		$this->generateView();
 	}
 	
+	public function action_calcShow(){
+		getMessages()->addInfo('Witaj w kalkulatorze');
+		$this->generateView();
+	}
 	/**
 	 * Wygenerowanie widoku
 	 */
 	public function generateView(){
-		//nie trzeba już tworzyć Smarty i przekazywać mu konfiguracji i messages
-		// - wszystko załatwia funkcja getSmarty()
-		
-		getSmarty()->assign('page_title','Przykład 06a');
-		getSmarty()->assign('page_description','Aplikacja z jednym "punktem wejścia". Zmiana w postaci nowej struktury foderów, skryptu inicjalizacji oraz pomocniczych funkcji.');
-		getSmarty()->assign('page_header','Kontroler główny');
-					
+
+		getSmarty()->assign('user',unserialize($_SESSION['user']));
+				
+		getSmarty()->assign('page_title','Super kalkulator - role');
+
 		getSmarty()->assign('form',$this->form);
 		getSmarty()->assign('res',$this->result);
 		
-		getSmarty()->display('CalcView.html'); // już nie podajemy pełnej ścieżki - foldery widoków są zdefiniowane przy ładowaniu Smarty
+		getSmarty()->display('CalcView.tpl');
 	}
 }
