@@ -1,9 +1,9 @@
-{extends file="../templates/main.html"}
+{extends file="main.html"}
+{* przy zdefiniowanych folderach nie trzeba już podawać pełnej ścieżki *}
 
-{block name=footerr}
-<!-- ======= Footer ======= -->
+{block name=footer}<!-- ======= Footer ======= -->
  
-
+<footer id="footer" data-aos="fade-up" data-aos-easing="ease-in-out" data-aos-duration="500">
     <div class="footer-top">
       <div class="container">
         <div class="row">
@@ -27,13 +27,12 @@
         Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
       </div>
     </div>
-  
-{/block}
+</footer>
+  {/block}
 
+{block name=content}
 
-{block name=contentt}
-
-  <!-- ======= Hero No Slider Section ======= -->
+<!-- ======= Hero No Slider Section ======= -->
   <section id="hero-no-slider" class="d-flex justify-cntent-center align-items-center">
     <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
       <div class="row justify-content-center">
@@ -63,17 +62,17 @@
 
         <div class="row" data-aos="fade-up">
 
-			<form action="{$conf->app_url}/app/calc.php" method="post">
+			<form action="{$conf->action_root}calcCompute" method="post">
 				<table>
 				<tr>
-				<td><label for="id_x">Kwota: </label></td>
-				<td><input id="id_x" type="text" name="kwota" value="{$form->kwota}" /></td>
+				<td><label for="x">Kwota: </label></td>
+				<td><input id="x" type="text" name="kwota" value="{$form->kwota}" /></td>
 				</tr><tr>
-				<td><label for="id_y">Na ile lat: </label></td>
-				<td><input id="id_y" type="text" name="czas" value="{$form->czas}" /></td>
+				<td><label for="y">Na ile lat: </label></td>
+				<td><input id="y" type="text" name="czas" value="{$form->czas}" /></td>
 				</tr><tr>	
-				<td><label for="id_op">Oprocentowanie: </label></td>
-				<td><input id="id_op" type="text" name="oprocentowanie" value="{$form->oprocentowanie}" /></td>
+				<td><label for="op">Oprocentowanie: </label></td>
+				<td><input id="op" type="text" name="oprocentowanie" value="{$form->oprocentowanie}" /></td>
 				</tr>
 				<td><input type="submit" value="Oblicz" /></td>
 				</table>
@@ -120,5 +119,4 @@
     </section><!-- End Features Section -->
 
   </main><!-- End #main -->
-
 {/block}
