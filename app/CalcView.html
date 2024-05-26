@@ -1,8 +1,7 @@
 {extends file="../templates/main.html"}
 
 {block name=footerr}
-  
-   <!-- ======= Footer ======= -->
+<!-- ======= Footer ======= -->
  
 
     <div class="footer-top">
@@ -30,6 +29,7 @@
     </div>
   
 {/block}
+
 
 {block name=contentt}
 
@@ -63,63 +63,59 @@
 
         <div class="row" data-aos="fade-up">
 
-			<form action="{$app_url}/app/calcw.php" method="post">
+			<form action="{$conf->app_url}/app/calc.php" method="post">
 				<table>
 				<tr>
 				<td><label for="id_x">Kwota: </label></td>
-				<td><input id="id_x" type="text" name="kwota" value="{$form['kwota']}" /></td>
+				<td><input id="id_x" type="text" name="kwota" value="{$form->kwota}" /></td>
 				</tr><tr>
 				<td><label for="id_y">Na ile lat: </label></td>
-				<td><input id="id_y" type="text" name="czas" value="{$form['czas']}" /></td>
+				<td><input id="id_y" type="text" name="czas" value="{$form->czas}" /></td>
 				</tr><tr>	
 				<td><label for="id_op">Oprocentowanie: </label></td>
-				<td><input id="id_op" type="text" name="oprocentowanie" value="{$form['oprocentowanie']}" /></td>
+				<td><input id="id_op" type="text" name="oprocentowanie" value="{$form->oprocentowanie}" /></td>
 				</tr>
 				<td><input type="submit" value="Oblicz" /></td>
 				</table>
 			</form>
 
-						<div class="messages">
+<div class="messages">
 
 {* wyświeltenie listy błędów, jeśli istnieją *}
-{if isset($messages)}
-	{if count($messages) > 0} 
-		<h4>Wystąpiły błędy: </h4>
-		<ol class="err">
-		{foreach  $messages as $msg}
-		{strip}
-			<li>{$msg}</li>
-		{/strip}
-		{/foreach}
-		</ol>
-	{/if}
+{if $msgs->isError()}
+	<h4>Wystąpiły błędy: </h4>
+	<ol class="err">
+	{foreach $msgs->getErrors() as $err}
+	{strip}
+		<li>{$err}</li>
+	{/strip}
+	{/foreach}
+	</ol>
 {/if}
 
 {* wyświeltenie listy informacji, jeśli istnieją *}
-{if isset($infos)}
-	{if count($infos) > 0} 
-		<h4>Informacje: </h4>
-		<ol class="inf">
-		{foreach  $infos as $msg}
-		{strip}
-			<li>{$msg}</li>
-		{/strip}
-		{/foreach}
-		</ol>
-	{/if}
+{if $msgs->isInfo()}
+	<h4>Informacje: </h4>
+	<ol class="inf">
+	{foreach $msgs->getInfos() as $inf}
+	{strip}
+		<li>{$inf}</li>
+	{/strip}
+	{/foreach}
+	</ol>
 {/if}
 
-{if isset($result)}
+{if isset($res->result)}
 	<h4>Wynik</h4>
 	<p class="res">
-	{$result}
+	{$res->result}
 	</p>
 {/if}
 
 </div>
 
 </div> <!--KONIEC KONTENTU-->
-</div>
+</div> <!--KONIEC container-->
        
     </section><!-- End Features Section -->
 
