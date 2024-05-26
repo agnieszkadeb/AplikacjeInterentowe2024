@@ -1,10 +1,8 @@
 <?php
+// KONTROLER strony kalkulatora
 require_once dirname(__FILE__).'/../config.php';
-
-// Kontroler podzielono na część definicji etapów (funkcje)
-// oraz część wykonawczą, która te funkcje odpowiednio wywołuje.
-// Na koniec wysłaniem odpowiedzi zajmie się odpowiedni widok.
-// Parametry do widoku przekazujemy  przez zmienne.
+//załaduj Smarty
+require_once _ROOT_PATH.'/lib/smarty/Smarty.class.php';
 
 include _ROOT_PATH.'/app/security/check.php';
 //pobranie parametrów
@@ -37,8 +35,7 @@ function validate(&$form,&$infos,&$msgs){
 		if (! is_numeric( $form['kwota'] )) $msgs [] = 'Pierwsza wartość nie jest liczbą';
 		if (! is_numeric( $form['czas'] )) $msgs [] = 'Druga wartość nie jest liczbą';
 		if (! is_numeric( $form['oprocentowanie'] )) $msgs [] = 'Trzecia wartość nie jest liczbą';
-	}
-	
+	}	
 	if (count($msgs)>0) return false;
 	else return true;
 }
@@ -51,8 +48,6 @@ function process(&$form,&$infos,&$msgs,&$result){
 	$form['kwota'] = floatval($form['kwota']);
 	$form['czas'] = floatval($form['czas']);
 	$form['oprocentowanie'] = floatval($form['oprocentowanie']);
-
-	
 	
 	if ($form['kwota'] < 1 ){
 		$msgs [] = 'Nie możesz liczyć dla kwot mniejszych od 1pln !';
@@ -60,8 +55,7 @@ function process(&$form,&$infos,&$msgs,&$result){
 	} else {
 		//$result = (($kwota / (12 * $czas) )*$oprocentowanie)+$kwota ;
 		//$result = ($kwota + $kwota * $oprocentowanie/(12*$czas))/(12*$czas);
-		$result = $form['kwota'] /(12*$form['czas'])+($form['kwota']/(12*$form['czas'])) * $form['oprocentowanie'];
-		
+		$result = $form['kwota'] /(12*$form['czas'])+($form['kwota']/(12*$form['czas'])) * $form['oprocentowanie'];	
 	}
 }
 
@@ -70,18 +64,27 @@ $form = null;
 $infos = array();
 $messages = array();
 $result = null;
-//domyślnie pokazuj wstęp strony (tytuł i tło)
-
 	
 getParams($form);
 if ( validate($form,$infos,$messages) ){
 	process($form,$infos,$messages,$result);
 }
 
-//Wywołanie widoku, wcześniej ustalenie zawartości zmiennych elementów szablonu
-$page_title = 'Przykład nr 3';
-$page_description = 'Najprostsze szablonowanie oparte na budowaniu widoku poprzez dołączanie kolejnych części HTML zdefiniowanych w różnych plikach .php';
-$page_header = 'Proste szablony';
-$page_footer = 'Stopka tej oto pięknej strony';
+// 4. Przygotowanie danych dla szablonu
 
-include 'calcw_view.php';
+$smarty = new Smarty();
+
+$smarty->assign('app_url',_APP_URL);
+$smarty->assign('root_path',_ROOT_PATH);
+$smarty->assign('page_title','Przykład 04');
+$smarty->assign('page_description','Szablonowanie Smarty w widoku uproszczonym');
+$smarty->assign('page_header','Szablony Smarty');
+
+//pozostałe zmienne niekoniecznie muszą istnieć, dlatego sprawdzamy aby nie otrzymać ostrzeżenia
+$smarty->assign('form',$form);
+$smarty->assign('result',$result);
+$smarty->assign('messages',$messages);
+$smarty->assign('infos',$infos);
+
+// 5. Wywołanie szablonu
+$smarty->display(_ROOT_PATH.'/app/calcw_view.html');
