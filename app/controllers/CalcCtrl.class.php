@@ -74,7 +74,7 @@ class CalcCtrl {
 	/* 
 	  Pobranie wartości, walidacja, obliczenie i wyświetlenie
 	 */
-	public function process(){
+	public function action_calcCompute(){
 
 		$this->getParams();
 		
@@ -108,7 +108,43 @@ class CalcCtrl {
 			
 			}		
 			getMessages()->addInfo('Wykonano obliczenia.');
+			
+
+	try{
+		
+		$database = new \Medoo\Medoo([
+	
+	'type' => 'mysql',
+	'host' => 'localhost',
+	'database' => 'kalkulator',
+	'username' => 'root',
+	'password' => '',
+ 
+	// [optional]
+	'charset' => 'utf8',
+	'collation' => 'utf8_polish_ci',
+	'port' => 3306,
+	'option' => [
+		\PDO::ATTR_CASE => \PDO::CASE_NATURAL,
+		\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+		]
+	]);
+			
+			$database->insert("kalkulator", [
+	"kwota" => $this->form->kwota,
+	"lat" => $this->form->czas,
+	"procent" => $this->form->oprocentowanie,
+	"rata" => $this->result->result,
+	"data" => date("Y-m-d H:i:s")
+]);
+				
 		}
+		catch (\PDOEXception $ex){
+			getMessages()->addError("Blad bazy: ".$ex->getMessages());
+		}
+		
+	}
+		
 		
 		$this->generateView();
 	}
